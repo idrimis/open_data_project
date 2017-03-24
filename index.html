@@ -1,0 +1,53 @@
+<html>
+<div id="chartContainer">
+  <script src="d3.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.3.0.min.js"></script>
+  <script type="text/javascript">
+    var results = [];
+    var svg = dimple.newSvg("#chartContainer", 590, 400);
+    var svg2 = dimple.newSvg("#chartContainer", 590, 400);
+    d3.csv("data.csv", function (data) {
+      data.forEach(function(d) {
+    d.cost = Math.round(+d.cost);
+  })
+      var unique_agency_codes = [];
+      for (let i=0; i<data.length; i++) {
+        var current = data[i].agencycode;
+        if (unique_agency_codes.indexOf(current)< 0 ) {
+          unique_agency_codes.push(current);
+        }
+      }
+      for (let i=0; i<unique_agency_codes.length; i++) {
+        temporarydumper=0;
+        var temp = new Object();
+        for (let t=0; t<data.length; t++ ) {
+          if (unique_agency_codes[i] == data[t].agencycode ) {
+          temporarydumper = data[t].cost + temporarydumper;
+          }
+        }
+        temp.agencycode = unique_agency_codes[i];
+        temp.totalcost = temporarydumper;
+        results.push(temp);
+      }
+      var myChart = new dimple.chart(svg, results);
+      myChart.setBounds(60, 30, 510, 305)
+      var x = myChart.addCategoryAxis("x", "agencycode");
+      myChart.addMeasureAxis("y", "totalcost");
+      myChart.addSeries(null, dimple.plot.bar);
+      myChart.draw();
+      var myChart2 = new dimple.chart(svg2, data);
+      myChart2.setBounds(20, 20, 460, 360)
+      myChart2.addMeasureAxis("p", "cost");
+      var ring = myChart2.addSeries("agencycode", dimple.plot.pie);
+      ring.innerRadius = "50%";
+      myChart2.addLegend(500, 20, 90, 300, "left");
+      myChart2.draw();
+    });
+  </script>
+</div>
+<h1>Description</h1>
+<p>At first, the audience that we aim the data for are finance ministry officials (u.s. Department  of treasury) that are interested on data regarding how many money were spent in total by the departments. The data provided in the chart is the total cost of the projects (planned cost) per agency. Agencies are represented by their code.
+These data are useful for the department cause it allows them to form their budgetary policy and change the distribution of funds.
+Regarding interactivity the only feedback that the graphs provide is some information when the user hovers over the respected area in the graph.
+</p>
+</html>
